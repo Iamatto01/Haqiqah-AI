@@ -56,7 +56,7 @@ const config = {
 
   // CORS
   cors: {
-    allowedOrigins: (process.env.CORS_ALLOWED_ORIGINS || 'http://localhost:3000')
+    allowedOrigins: (process.env.CORS_ALLOWED_ORIGINS || 'http://localhost:3000,https://iamatto01.github.io')
       .split(',')
       .map(origin => origin.trim()),
   },
