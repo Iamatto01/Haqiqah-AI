@@ -5,31 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Haqiqah AI Verification Tool</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #e5e7eb;
-            color: #1f2937;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #f3f4f6; /* Light modern grey */
+            color: #111827;
             margin: 0;
-            padding: 3rem 1rem;
+            padding: 4rem 1rem;
             display: flex;
             justify-content: center;
+            line-height: 1.5;
         }
         .container {
             background-color: #ffffff;
-            padding: 2.5rem;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
+            padding: 3rem;
+            border: 1px solid rgba(0,0,0,0.05);
+            border-radius: 16px;
             width: 100%;
             max-width: 700px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
         }
         h1 {
-            font-size: 1.5rem;
+            font-size: 1.75rem;
+            font-weight: 600;
             margin-top: 0;
             color: #111827;
-            border-bottom: 2px solid #f3f4f6;
-            padding-bottom: 1rem;
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
+            letter-spacing: -0.025em;
         }
         .form-group {
             margin-bottom: 1.5rem;
@@ -37,83 +40,102 @@
         label {
             display: block;
             margin-bottom: 0.5rem;
-            font-weight: 600;
+            font-weight: 500;
             color: #374151;
             font-size: 0.95rem;
         }
         textarea, input[type="text"] {
             width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
+            padding: 0.875rem 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
             font-family: inherit;
             font-size: 1rem;
             background-color: #f9fafb;
+            transition: all 0.2s ease;
+            box-sizing: border-box;
         }
         textarea:focus, input[type="text"]:focus {
             outline: none;
-            border-color: #6b7280;
+            border-color: #9ca3af;
             background-color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(156, 163, 175, 0.2);
         }
         textarea {
             height: 120px;
             resize: vertical;
         }
         .file-upload {
-            border: 2px dashed #d1d5db;
-            padding: 2rem 1rem;
+            border: 2px dashed #e5e7eb;
+            padding: 2.5rem 1rem;
             text-align: center;
             background-color: #f9fafb;
-            border-radius: 6px;
+            border-radius: 12px;
             cursor: pointer;
             color: #6b7280;
-            transition: background-color 0.2s;
+            transition: all 0.2s ease;
+            font-weight: 500;
         }
         .file-upload:hover {
             background-color: #f3f4f6;
+            border-color: #d1d5db;
         }
         #imagePreview {
             max-width: 100%;
             max-height: 250px;
             margin-top: 1rem;
             display: none;
-            border-radius: 6px;
+            border-radius: 8px;
             border: 1px solid #e5e7eb;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
         }
         button {
-            background-color: #4b5563;
+            background-color: #111827;
             color: white;
             border: none;
-            padding: 0.875rem 1.5rem;
-            border-radius: 6px;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
             cursor: pointer;
             font-size: 1rem;
-            font-weight: 600;
+            font-weight: 500;
             width: 100%;
-            transition: background-color 0.2s;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
         button:hover {
             background-color: #374151;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 8px -1px rgba(0, 0, 0, 0.15);
+        }
+        button:active {
+            transform: translateY(0);
         }
         .result-box {
             margin-top: 2rem;
             padding: 1.5rem;
             border: 1px solid #e5e7eb;
-            border-radius: 6px;
+            border-radius: 12px;
             background-color: #f9fafb;
             display: none;
+            animation: slideDown 0.3s ease-out;
+        }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         .result-box.active {
             display: block;
         }
         .verdict-badge {
-            display: inline-block;
-            padding: 0.35rem 0.75rem;
-            border-radius: 4px;
-            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-weight: 600;
             color: white;
-            margin-bottom: 1rem;
-            font-size: 1.1rem;
+            margin-bottom: 1.25rem;
+            font-size: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         .loader {
             display: none;
@@ -121,13 +143,24 @@
             margin-top: 1.5rem;
             color: #6b7280;
             font-weight: 500;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
         }
         .help-text {
             font-size: 0.85rem;
             color: #6b7280;
-            margin-top: 0.5rem;
+            margin-top: 0.75rem;
             display: block;
         }
+        /* Make scrollbars look nice */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
     </style>
 </head>
 <body>
