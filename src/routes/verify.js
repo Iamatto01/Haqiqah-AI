@@ -78,6 +78,12 @@ router.post(
           scraped.text,
           text ? `\nAdditional context provided by user:\n${text}` : '',
         ].filter(Boolean).join('\n\n');
+
+        // Truncate to prevent hitting Groq's 6000 TPM limit on the free tier
+        if (contentToAnalyze.length > 8000) {
+            console.log(`[${requestId}] Truncating content from ${contentToAnalyze.length} to 8000 characters`);
+            contentToAnalyze = contentToAnalyze.substring(0, 8000) + "\n\n[Content truncated due to AI rate limits]";
+        }
       }
 
       if ((!contentToAnalyze || contentToAnalyze.trim().length < 10) && !image) {

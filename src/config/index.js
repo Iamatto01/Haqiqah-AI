@@ -38,7 +38,7 @@ const config = {
   groq: {
     apiKey: requireEnv('GROQ_API_KEY'),
     claimExtractionModel: 'llama-3.1-8b-instant',
-    verdictSynthesisModel: 'llama-3.3-70b-versatile',
+    verdictSynthesisModel: 'llama-3.1-8b-instant', // Downgraded from 70B to avoid rate limits
     visionModel: 'llama-3.2-11b-vision-preview',
     maxTokensClaim: 2048,
     maxTokensVerdict: 4096,

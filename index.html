@@ -278,7 +278,8 @@
                     if (data.claims && data.claims.length > 0) {
                         claimsHtml = '<strong>Extracted Claims:</strong><ul style="margin-top: 0.5rem; padding-left: 1.2rem; color: #4b5563;">';
                         data.claims.forEach(c => {
-                            claimsHtml += `<li style="margin-bottom: 0.25rem;">${c.claim}</li>`;
+                            const claimText = c.text || c.claim || 'Unknown claim';
+                            claimsHtml += `<li style="margin-bottom: 0.25rem;">${claimText}</li>`;
                         });
                         claimsHtml += '</ul>';
                     }

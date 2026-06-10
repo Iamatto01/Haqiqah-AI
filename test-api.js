@@ -1,7 +1,8 @@
-const http = require('http');
+const https = require('http');
 
 const data = JSON.stringify({
-  text: "The Earth is actually flat and scientists are hiding the truth from us. NASA faked the moon landings to maintain their massive budget and keep people compliant. The ice wall at the edge of the world is guarded by international military forces."
+  url: "https://www.astroawani.com/berita-politik/tamat-kerjasama-dengan-bersatu-pas-mungkin-keluar-atau-dikeluarkan-daripada-pn-penganalisis",
+  source: "api"
 });
 
 const options = {
@@ -15,20 +16,30 @@ const options = {
   }
 };
 
-const req = http.request(options, (res) => {
+const req = https.request(options, (res) => {
   let body = '';
-  res.on('data', (chunk) => {
-    body += chunk;
-  });
+  res.on('data', (chunk) => body += chunk.toString());
   res.on('end', () => {
-    console.log(`STATUS: ${res.statusCode}`);
-    console.log('RESPONSE:');
-    console.log(JSON.stringify(JSON.parse(body), null, 2));
+    try {
+        const parsed = JSON.parse(body);
+        console.log("=== FACT CHECK RESULTS ===\n");
+        if (parsed.success) {
+            console.log(`Verdict: ${parsed.data.truthMeter.icon} ${parsed.data.truthMeter.label}`);
+            console.log(`Confidence Score: ${parsed.data.confidenceScore}/100\n`);
+            console.log(`Summary:\n${parsed.data.analysis.summary}\n`);
+            console.log(`Extracted Claims:`);
+            parsed.data.claims.forEach((c, i) => console.log(`  ${i+1}. ${c.claim}`));
+        } else {
+            console.log(parsed);
+        }
+    } catch(e) {
+        console.log("Raw response:", body);
+    }
   });
 });
 
-req.on('error', (e) => {
-  console.error(`Problem with request: ${e.message}`);
+req.on('error', (error) => {
+  console.error('Error connecting to backend:', error);
 });
 
 req.write(data);
