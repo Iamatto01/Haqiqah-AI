@@ -3,462 +3,182 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Haqiqah AI | Combat Misinformation</title>
-    <meta name="description" content="AI-powered content verification backend to combat misinformation and fitnah.">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <title>Haqiqah AI Verification Tool</title>
     <style>
-        :root {
-            --bg-color: #050505;
-            --text-main: #ffffff;
-            --text-muted: #a0a0a0;
-            --primary: #6366f1;
-            --secondary: #a855f7;
-            --accent: #ec4899;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Outfit', sans-serif;
-        }
-
         body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            overflow-x: hidden;
-            line-height: 1.6;
-        }
-
-        /* Ambient Background */
-        .ambient-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: -1;
-            overflow: hidden;
-        }
-
-        .blob {
-            position: absolute;
-            filter: blur(80px);
-            opacity: 0.5;
-            animation: float 20s infinite alternate ease-in-out;
-        }
-
-        .blob-1 {
-            top: -10%;
-            left: -10%;
-            width: 50vw;
-            height: 50vw;
-            background: radial-gradient(circle, var(--primary) 0%, transparent 70%);
-        }
-
-        .blob-2 {
-            bottom: -20%;
-            right: -10%;
-            width: 60vw;
-            height: 60vw;
-            background: radial-gradient(circle, var(--secondary) 0%, transparent 70%);
-            animation-delay: -5s;
-        }
-
-        .blob-3 {
-            top: 40%;
-            left: 40%;
-            width: 40vw;
-            height: 40vw;
-            background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
-            animation-duration: 25s;
-            opacity: 0.3;
-        }
-
-        @keyframes float {
-            0% { transform: translate(0, 0) scale(1); }
-            50% { transform: translate(5%, 10%) scale(1.1); }
-            100% { transform: translate(-5%, -5%) scale(0.9); }
-        }
-
-        /* Navigation */
-        nav {
-            padding: 2rem 5%;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #e5e7eb;
+            color: #1f2937;
+            margin: 0;
+            padding: 3rem 1rem;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 100;
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 800;
-            background: linear-gradient(to right, #fff, #a0a0a0);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: 1px;
-        }
-
-        .nav-links a {
-            color: var(--text-main);
-            text-decoration: none;
-            margin-left: 2rem;
-            font-size: 0.9rem;
-            font-weight: 400;
-            transition: color 0.3s ease;
-        }
-
-        .nav-links a:hover {
-            color: var(--secondary);
-        }
-
-        /* Hero Section */
-        .hero {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
             justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 0 5%;
-            margin-top: 60px;
         }
-
-        .badge {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 0.5rem 1rem;
-            border-radius: 50px;
-            font-size: 0.8rem;
-            margin-bottom: 2rem;
-            backdrop-filter: blur(10px);
-            animation: fadeUp 1s ease both;
-        }
-
-        h1 {
-            font-size: 5rem;
-            font-weight: 800;
-            line-height: 1.1;
-            margin-bottom: 1.5rem;
-            max-width: 900px;
-            background: linear-gradient(to right, #fff, #a855f7, #6366f1);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: fadeUp 1s ease 0.2s both;
-        }
-
-        p.subtitle {
-            font-size: 1.2rem;
-            color: var(--text-muted);
-            max-width: 600px;
-            margin-bottom: 3rem;
-            animation: fadeUp 1s ease 0.4s both;
-        }
-
-        .cta-group {
-            display: flex;
-            gap: 1rem;
-            animation: fadeUp 1s ease 0.6s both;
-        }
-
-        .btn {
-            padding: 1rem 2rem;
-            border-radius: 8px;
-            font-weight: 600;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            border: none;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            box-shadow: 0 10px 20px -10px var(--secondary);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 15px 25px -10px var(--secondary);
-        }
-
-        .btn-outline {
-            background: transparent;
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-        }
-
-        .btn-outline:hover {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: rgba(255, 255, 255, 0.4);
-        }
-
-        /* Features Section */
-        .features {
-            padding: 5rem 5%;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .feature-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 16px;
+        .container {
+            background-color: #ffffff;
             padding: 2.5rem;
-            backdrop-filter: blur(20px);
-            transition: all 0.4s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .feature-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
             width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 100%);
-            opacity: 0;
-            transition: opacity 0.4s ease;
+            max-width: 700px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         }
-
-        .feature-card:hover {
-            transform: translateY(-10px);
-            border-color: rgba(255, 255, 255, 0.2);
-            box-shadow: 0 20px 40px -20px rgba(0,0,0,0.5);
-        }
-
-        .feature-card:hover::before {
-            opacity: 1;
-        }
-
-        .feature-icon {
-            font-size: 2.5rem;
-            margin-bottom: 1.5rem;
-            display: inline-block;
-            background: linear-gradient(to bottom right, var(--primary), var(--accent));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .feature-card h3 {
+        h1 {
             font-size: 1.5rem;
-            margin-bottom: 1rem;
-            font-weight: 600;
+            margin-top: 0;
+            color: #111827;
+            border-bottom: 2px solid #f3f4f6;
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
         }
-
-        .feature-card p {
-            color: var(--text-muted);
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #374151;
             font-size: 0.95rem;
         }
-
-        /* Animations */
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @media (max-width: 768px) {
-            h1 { font-size: 3rem; }
-            .nav-links { display: none; }
-            .cta-group { flex-direction: column; width: 100%; padding: 0 2rem; }
-            .btn { width: 100%; text-align: center; }
-        }
-
-        /* Live Demo Section */
-        .live-demo {
-            padding: 4rem 5%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .demo-card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            padding: 2rem;
-            backdrop-filter: blur(20px);
+        textarea, input[type="text"] {
             width: 100%;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-
-        .demo-card h2 {
-            font-size: 2rem;
-            margin-bottom: 1rem;
-            text-align: center;
-            background: linear-gradient(to right, #fff, var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .input-group textarea {
-            width: 100%;
-            padding: 1rem;
-            border-radius: 8px;
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: white;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-family: inherit;
             font-size: 1rem;
-            resize: vertical;
-            min-height: 100px;
+            background-color: #f9fafb;
         }
-
-        .input-group textarea:focus {
+        textarea:focus, input[type="text"]:focus {
             outline: none;
-            border-color: var(--primary);
+            border-color: #6b7280;
+            background-color: #ffffff;
         }
-
+        textarea {
+            height: 120px;
+            resize: vertical;
+        }
+        .file-upload {
+            border: 2px dashed #d1d5db;
+            padding: 2rem 1rem;
+            text-align: center;
+            background-color: #f9fafb;
+            border-radius: 6px;
+            cursor: pointer;
+            color: #6b7280;
+            transition: background-color 0.2s;
+        }
+        .file-upload:hover {
+            background-color: #f3f4f6;
+        }
+        #imagePreview {
+            max-width: 100%;
+            max-height: 250px;
+            margin-top: 1rem;
+            display: none;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+        }
+        button {
+            background-color: #4b5563;
+            color: white;
+            border: none;
+            padding: 0.875rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            width: 100%;
+            transition: background-color 0.2s;
+        }
+        button:hover {
+            background-color: #374151;
+        }
         .result-box {
-            margin-top: 1.5rem;
+            margin-top: 2rem;
             padding: 1.5rem;
-            border-radius: 8px;
-            background: rgba(0,0,0,0.3);
-            border: 1px solid rgba(255,255,255,0.05);
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            background-color: #f9fafb;
             display: none;
         }
-
         .result-box.active {
             display: block;
-            animation: fadeUp 0.5s ease both;
         }
-
         .verdict-badge {
             display: inline-block;
-            padding: 0.5rem 1rem;
-            border-radius: 50px;
+            padding: 0.35rem 0.75rem;
+            border-radius: 4px;
             font-weight: bold;
+            color: white;
             margin-bottom: 1rem;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
         }
-
         .loader {
             display: none;
-            border: 3px solid rgba(255,255,255,0.1);
-            border-top: 3px solid var(--primary);
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
+            text-align: center;
+            margin-top: 1.5rem;
+            color: #6b7280;
+            font-weight: 500;
         }
-
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .help-text {
+            font-size: 0.85rem;
+            color: #6b7280;
+            margin-top: 0.5rem;
+            display: block;
+        }
     </style>
 </head>
 <body>
+    <div class="container">
+        <h1>Fact Check Tool</h1>
+        
+        <div class="form-group">
+            <label for="claimInput">Text or Link to analyze</label>
+            <textarea id="claimInput" placeholder="Paste suspicious text or a news link (e.g., https://example.com/news) here..."></textarea>
+        </div>
 
-    <!-- Ambient Background -->
-    <div class="ambient-bg">
-        <div class="blob blob-1"></div>
-        <div class="blob blob-2"></div>
-        <div class="blob blob-3"></div>
+        <div class="form-group">
+            <label>Image Attachment (Optional)</label>
+            <div class="file-upload" onclick="document.getElementById('imageInput').click()">
+                Click to browse for an image...
+                <input type="file" id="imageInput" accept="image/*" style="display: none;">
+            </div>
+            <img id="imagePreview" alt="Image preview">
+            <span class="help-text">Note: The AI currently prioritizes text and links. Image processing is for context.</span>
+        </div>
+
+        <button id="verifyBtn">Run Verification</button>
+        <div id="loader" class="loader">Analyzing content via local backend...</div>
+
+        <div id="resultBox" class="result-box">
+            <div id="verdictBadge" class="verdict-badge"></div>
+            <h3 style="margin-top: 0; margin-bottom: 0.5rem; font-size: 1.1rem;">Analysis Report</h3>
+            <p id="analysisText" style="line-height: 1.5; color: #4b5563;"></p>
+            <div id="claimsList" style="margin-top: 1.5rem;"></div>
+        </div>
     </div>
 
-    <!-- Navigation -->
-    <nav>
-        <div class="logo">Haqiqah AI</div>
-        <div class="nav-links">
-            <a href="#demo">Live Demo</a>
-            <a href="#features">Features</a>
-            <a href="https://github.com/Iamatto01/Haqiqah-AI" target="_blank">GitHub</a>
-        </div>
-    </nav>
-
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="badge">🚀 SentinelTruth Mission Active</div>
-        <h1>Seek Truth.<br>Defeat Misinformation.</h1>
-        <p class="subtitle">An advanced AI-powered content verification platform designed to combat fake news, rumors, and fitnah with lightning-fast accuracy.</p>
-        
-        <div class="cta-group">
-            <a href="#demo" class="btn btn-primary">Try Live Demo</a>
-            <a href="#features" class="btn btn-outline">Discover Features</a>
-        </div>
-    </section>
-
-    <!-- Live Demo Section -->
-    <section class="live-demo" id="demo">
-        <div class="demo-card">
-            <h2>Try the Fact Checker</h2>
-            <p style="text-align: center; color: var(--text-muted); margin-bottom: 2rem;">Paste a suspicious claim or news text below to verify it instantly.</p>
-            
-            <div class="input-group">
-                <textarea id="claimInput" placeholder="E.g., Drinking warm water with lemon cures all diseases..."></textarea>
-                <button id="verifyBtn" class="btn btn-primary" style="width: 100%;">Verify Claim</button>
-            </div>
-            
-            <div id="loader" class="loader"></div>
-
-            <div id="resultBox" class="result-box">
-                <div id="verdictBadge" class="verdict-badge"></div>
-                <h3 style="margin-bottom: 0.5rem;">Analysis:</h3>
-                <p id="analysisText" style="color: var(--text-muted);"></p>
-                <div id="claimsList" style="margin-top: 1rem; font-size: 0.9rem;"></div>
-            </div>
-            <p style="text-align: center; font-size: 0.8rem; color: var(--text-muted); margin-top: 1rem;">Note: Make sure your local backend is running (<code>npm run dev</code>)</p>
-        </div>
-    </section>
-
-    <!-- Features Section -->
-    <section class="features" id="features">
-        <div class="feature-card">
-            <div class="feature-icon">🔍</div>
-            <h3>Real-time Fact Checking</h3>
-            <p>Instantly analyze claims across the web using state-of-the-art NLP models powered by Groq, cross-referencing against trusted databases.</p>
-        </div>
-        <div class="feature-card">
-            <div class="feature-icon">🛡️</div>
-            <h3>Fitnah Prevention</h3>
-            <p>Proactively detect malicious narratives and coordinated misinformation campaigns before they go viral in your community.</p>
-        </div>
-        <div class="feature-card">
-            <div class="feature-icon">⚡</div>
-            <h3>Browser Extension</h3>
-            <p>Seamlessly integrated into your daily workflow. Get immediate context and trust scores while reading articles or scrolling social media.</p>
-        </div>
-    </section>
-
-    <footer style="text-align: center; padding: 2rem; color: var(--text-muted); border-top: 1px solid rgba(255,255,255,0.05); margin-top: 2rem;">
-        <p>&copy; 2026 Haqiqah AI. Seeking truth through technology.</p>
-    </footer>
-
     <script>
-        // Simple scroll animation script
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                document.querySelector(this.getAttribute('href')).scrollIntoView({
-                    behavior: 'smooth'
-                });
-            });
+        // Image preview logic
+        document.getElementById('imageInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.getElementById('imagePreview');
+                    img.src = e.target.result;
+                    img.style.display = 'block';
+                }
+                reader.readAsDataURL(file);
+            }
         });
 
         // Fact checker logic
         document.getElementById('verifyBtn').addEventListener('click', async () => {
-            const text = document.getElementById('claimInput').value.trim();
-            if (!text) return alert("Please enter a claim to verify!");
+            const inputVal = document.getElementById('claimInput').value.trim();
+            if (!inputVal) return alert("Please enter text or a link to verify.");
             
             const btn = document.getElementById('verifyBtn');
             const loader = document.getElementById('loader');
@@ -468,12 +188,20 @@
             loader.style.display = 'block';
             resultBox.classList.remove('active');
             
+            // Check if input is a URL
+            const isUrl = inputVal.startsWith('http://') || inputVal.startsWith('https://');
+            const requestBody = { source: 'web' };
+            if (isUrl) {
+                requestBody.url = inputVal;
+            } else {
+                requestBody.text = inputVal;
+            }
+            
             try {
-                // Pointing to your local backend server
                 const response = await fetch('http://localhost:3000/api/v1/verify-content', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ text, source: 'web' })
+                    body: JSON.stringify(requestBody)
                 });
                 
                 const resData = await response.json();
@@ -482,17 +210,23 @@
                     const data = resData.data;
                     const tm = data.truthMeter;
                     
-                    document.getElementById('verdictBadge').innerHTML = `${tm.icon} ${tm.label}`;
-                    document.getElementById('verdictBadge').style.backgroundColor = tm.bgColor;
-                    document.getElementById('verdictBadge').style.color = tm.color;
+                    const badge = document.getElementById('verdictBadge');
+                    badge.innerHTML = `${tm.icon} ${tm.label}`;
+                    badge.style.backgroundColor = tm.bgColor;
+                    // Ensure text is readable on light badges
+                    if (tm.bgColor === '#FBBF24' || tm.bgColor === '#FCD34D') {
+                        badge.style.color = '#000';
+                    } else {
+                        badge.style.color = tm.color || '#fff';
+                    }
                     
                     document.getElementById('analysisText').textContent = data.analysis.summary;
                     
                     let claimsHtml = '';
                     if (data.claims && data.claims.length > 0) {
-                        claimsHtml = '<strong>Extracted Claims:</strong><ul style="margin-left: 1.5rem; margin-top: 0.5rem; color: #ccc;">';
+                        claimsHtml = '<strong>Extracted Claims:</strong><ul style="margin-top: 0.5rem; padding-left: 1.2rem; color: #4b5563;">';
                         data.claims.forEach(c => {
-                            claimsHtml += `<li>${c.claim}</li>`;
+                            claimsHtml += `<li style="margin-bottom: 0.25rem;">${c.claim}</li>`;
                         });
                         claimsHtml += '</ul>';
                     }
@@ -500,11 +234,11 @@
                     
                     resultBox.classList.add('active');
                 } else {
-                    alert("Error checking claim. Make sure your local server is running!");
+                    alert("Error checking claim. Make sure your local server is running.");
                 }
             } catch (err) {
                 console.error(err);
-                alert("Failed to connect to backend. Make sure your local server is running on localhost:3000!");
+                alert("Failed to connect to backend. Is your server running on localhost:3000?");
             } finally {
                 btn.style.display = 'block';
                 loader.style.display = 'none';
