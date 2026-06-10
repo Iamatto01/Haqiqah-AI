@@ -41,16 +41,21 @@ const verifyContentRules = [
     .isLength({ max: 2048 })
     .withMessage('URL must not exceed 2048 characters'),
 
+  body('image')
+    .optional()
+    .isString()
+    .withMessage('Image must be a base64 string'),
+
   body('source')
     .optional()
     .isString()
-    .isIn(['extension', 'wix', 'api', 'manual'])
-    .withMessage('Source must be one of: extension, wix, api, manual'),
+    .isIn(['extension', 'wix', 'api', 'manual', 'web'])
+    .withMessage('Source must be one of: extension, wix, api, manual, web'),
 
-  // Custom validator: ensure at least one of text or url is provided
+  // Custom validator: ensure at least one of text, url, or image is provided
   body().custom((value, { req }) => {
-    if (!req.body.text && !req.body.url) {
-      throw new Error('Either "text" or "url" must be provided');
+    if (!req.body.text && !req.body.url && !req.body.image) {
+      throw new Error('Either "text", "url", or "image" must be provided');
     }
     return true;
   }),

@@ -39,6 +39,7 @@ const config = {
     apiKey: requireEnv('GROQ_API_KEY'),
     claimExtractionModel: 'llama-3.1-8b-instant',
     verdictSynthesisModel: 'llama-3.3-70b-versatile',
+    visionModel: 'llama-3.2-11b-vision-preview',
     maxTokensClaim: 2048,
     maxTokensVerdict: 4096,
     temperature: 0.1, // Low temperature for factual accuracy

@@ -49,11 +49,11 @@ router.post(
     const requestId = generateRequestId();
 
     try {
-      const { text, url, source = 'api' } = req.body;
+      const { text, url, image, source = 'api' } = req.body;
 
       console.log(`\n${'═'.repeat(60)}`);
       console.log(`[REQUEST ${requestId}] New verification request`);
-      console.log(`  Source: ${source} | Text: ${text ? 'yes' : 'no'} | URL: ${url || 'none'}`);
+      console.log(`  Source: ${source} | Text: ${text ? 'yes' : 'no'} | URL: ${url || 'none'} | Image: ${image ? 'yes' : 'no'}`);
       console.log(`${'═'.repeat(60)}`);
 
       // ─── Step 1: Get content to analyze ───────────────────
@@ -80,17 +80,17 @@ router.post(
         ].filter(Boolean).join('\n\n');
       }
 
-      if (!contentToAnalyze || contentToAnalyze.trim().length < 10) {
+      if ((!contentToAnalyze || contentToAnalyze.trim().length < 10) && !image) {
         throw new AppError(
-          'Insufficient content to analyze. Please provide more text or a different URL.',
+          'Insufficient content to analyze. Please provide more text, a valid URL, or an image.',
           400,
           'INSUFFICIENT_CONTENT'
         );
       }
 
-      // ─── Step 2: Extract claims via Groq (fast model) ────
+      // ─── Step 2: Extract claims via Groq (fast model or vision model) ────
       console.log(`[${requestId}] Step 2: Extracting claims...`);
-      const claimAnalysis = await groqService.extractClaims(contentToAnalyze);
+      const claimAnalysis = await groqService.extractClaims(contentToAnalyze, image);
 
       if (!claimAnalysis.claims || claimAnalysis.claims.length === 0) {
         // No factual claims found — return early with UNVERIFIED

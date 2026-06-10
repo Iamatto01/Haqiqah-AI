@@ -18,18 +18,32 @@ const groq = new Groq({
 });
 
 /**
- * Stage 1: Extract factual claims from text content.
- * Uses the fast 8B model for quick turnaround.
+ * Stage 1: Extract factual claims from text content (and optional image).
+ * Uses the fast 8B model for text, or the 11B vision model if an image is present.
  * 
  * @param {string} text - The content to analyze
+ * @param {string} [imageBase64] - Optional base64 encoded image
  * @returns {Promise<Object>} Extracted claims and analysis
  */
-async function extractClaims(text) {
+async function extractClaims(text, imageBase64) {
   try {
     const startTime = Date.now();
+    const modelToUse = imageBase64 ? config.groq.visionModel : config.groq.claimExtractionModel;
+    
+    let userMessageContent;
+    if (imageBase64) {
+      // Ensure correct formatting for base64
+      const formattedImage = imageBase64.startsWith('data:image') ? imageBase64 : `data:image/jpeg;base64,${imageBase64}`;
+      userMessageContent = [
+        { type: "text", text: `Analyze the following content and image, and extract all factual claims. Ensure you consider both the image text and the provided text context:\n\n---\n${text || 'No text provided. Analyze the image.'}\n---` },
+        { type: "image_url", image_url: { url: formattedImage } }
+      ];
+    } else {
+      userMessageContent = `Analyze the following content and extract all factual claims:\n\n---\n${text}\n---`;
+    }
 
     const completion = await groq.chat.completions.create({
-      model: config.groq.claimExtractionModel,
+      model: modelToUse,
       messages: [
         {
           role: 'system',
@@ -37,7 +51,7 @@ async function extractClaims(text) {
         },
         {
           role: 'user',
-          content: `Analyze the following content and extract all factual claims:\n\n---\n${text}\n---`,
+          content: userMessageContent,
         },
       ],
       temperature: config.groq.temperature,
@@ -53,12 +67,12 @@ async function extractClaims(text) {
     const parsed = safeParseJSON(responseText);
     const elapsed = Date.now() - startTime;
 
-    console.log(`[GROQ] Claim extraction completed in ${elapsed}ms | Model: ${config.groq.claimExtractionModel} | Claims found: ${parsed.claims?.length || 0}`);
+    console.log(`[GROQ] Claim extraction completed in ${elapsed}ms | Model: ${modelToUse} | Claims found: ${parsed.claims?.length || 0}`);
 
     return {
       ...parsed,
       _meta: {
-        model: config.groq.claimExtractionModel,
+        model: modelToUse,
         processingTimeMs: elapsed,
         tokensUsed: completion.usage?.total_tokens || 0,
       },

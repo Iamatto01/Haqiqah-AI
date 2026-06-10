@@ -179,7 +179,7 @@
                 <input type="file" id="imageInput" accept="image/*" style="display: none;">
             </div>
             <img id="imagePreview" alt="Image preview">
-            <span class="help-text">Note: The AI currently prioritizes text and links. Image processing is for context.</span>
+            <span class="help-text">Image analysis is powered by Groq Vision AI.</span>
         </div>
 
         <button id="verifyBtn">Run Verification</button>
@@ -194,6 +194,9 @@
     </div>
 
     <script>
+        // Global var to store base64 image
+        let currentBase64Image = null;
+
         // Image preview logic
         document.getElementById('imageInput').addEventListener('change', function(e) {
             const file = e.target.files[0];
@@ -203,15 +206,23 @@
                     const img = document.getElementById('imagePreview');
                     img.src = e.target.result;
                     img.style.display = 'block';
+                    // Store the base64 string for the API request
+                    currentBase64Image = e.target.result;
                 }
                 reader.readAsDataURL(file);
+            } else {
+                document.getElementById('imagePreview').style.display = 'none';
+                currentBase64Image = null;
             }
         });
 
         // Fact checker logic
         document.getElementById('verifyBtn').addEventListener('click', async () => {
             const inputVal = document.getElementById('claimInput').value.trim();
-            if (!inputVal) return alert("Please enter text or a link to verify.");
+            
+            if (!inputVal && !currentBase64Image) {
+                return alert("Please enter text, a link, or upload an image to verify.");
+            }
             
             const btn = document.getElementById('verifyBtn');
             const loader = document.getElementById('loader');
@@ -221,13 +232,21 @@
             loader.style.display = 'block';
             resultBox.classList.remove('active');
             
-            // Check if input is a URL
-            const isUrl = inputVal.startsWith('http://') || inputVal.startsWith('https://');
+            // Construct request payload
             const requestBody = { source: 'web' };
-            if (isUrl) {
-                requestBody.url = inputVal;
-            } else {
-                requestBody.text = inputVal;
+            
+            if (inputVal) {
+                // Check if input is a URL
+                const isUrl = inputVal.startsWith('http://') || inputVal.startsWith('https://');
+                if (isUrl) {
+                    requestBody.url = inputVal;
+                } else {
+                    requestBody.text = inputVal;
+                }
+            }
+
+            if (currentBase64Image) {
+                requestBody.image = currentBase64Image;
             }
             
             try {
